@@ -1,37 +1,24 @@
-Number Sorting App
+# Streamlit Application
 
-This is a web-based application built with Streamlit that allows users to upload a text file containing numbers and sort them using various algorithms. It features real-time performance tracking and data visualization.
+## Requirements
+This application requires Streamlit to run.
 
-Key Features
+Make sure you have Python installed, then install Streamlit using:
 
-Multiple Algorithms: Choose between Bubble Sort, Insertion Sort, and Merge Sort.
+pip install streamlit
 
-Smart Encoding: Automatically handles different file encodings (UTF-8, UTF-16, etc.) common in Windows and Mac environments.
+## How to Run the Application
 
-Data Visualization: Automatically generates a line chart of your sorted data.
+1. Open the project folder
+2. Open Command Prompt inside the folder
+   - Click the address bar, type cmd, and press Enter
+   - OR right-click inside the folder and select Open in Terminal / Command Prompt
+3. Run the following command:
 
-Performance Metrics: Displays the exact time taken to sort the dataset.
-
-Export Results: Download your sorted numbers directly as a new .txt file.
-
-Installation & Setup
-
-To run this application locally, follow these steps:
-
-Install Python: Ensure you have Python installed on your system.
-
-Install Streamlit: Open your terminal or command prompt and run the following command to install the required library:
-
-Bash
-pip install streamlit pandas
-Download the Script: Save the provided code as app.py.
-
-How to Run
-
-Navigate to the folder where app.py is saved using your terminal.
-
-Launch the app by typing:
-
-Bash
 streamlit run app.py
-The app will automatically open in your default web browser (usually at http://localhost:8501).
+
+4. The application will open automatically in your default web browser.
+
+## Notes
+- Make sure app.py is inside the folder you are running the command from
+- Do not close the Command Prompt while the app is running
