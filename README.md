@@ -1,4 +1,4 @@
-# DAA Lab - AY 2024-2025
+# DAA Lab - AY 2025-2026
 
 A collection of **Design and Analysis of Algorithms (DAA)** laboratory programs implemented as part of the Academic Year 2025-2026 curriculum. This repository contains solutions for various algorithmic problems, focusing on time complexity, sorting, searching, and graph theory.
 
