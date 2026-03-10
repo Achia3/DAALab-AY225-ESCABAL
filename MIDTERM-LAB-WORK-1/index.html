@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-Metric Shortest Path Finder</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Section -->
+      <header class="header">
+        <div class="header-content">
+          <h1 class="title">
+            <span class="title-icon">🗺️</span>
+            Multi-Metric Shortest Path Finder
+          </h1>
+          <p class="subtitle">Dijkstra's Algorithm - All Pairs Analysis</p>
+        </div>
+      </header>
+
+      <!-- Control Panel -->
+      <div class="control-panel">
+        <div class="control-group">
+          <label for="nodeFilter" class="control-label">
+            <span class="label-icon">📍</span>
+            Filter by Source Node:
+          </label>
+          <select id="nodeFilter" class="node-select">
+            <option value="all">All Nodes</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span class="label-icon">🎯</span>
+            Show Metrics:
+          </label>
+          <div class="metric-toggles">
+            <button class="metric-toggle active" data-metric="distance">
+              <span class="toggle-icon">📏</span>
+              Distance
+            </button>
+            <button class="metric-toggle active" data-metric="time">
+              <span class="toggle-icon">⏱️</span>
+              Time
+            </button>
+            <button class="metric-toggle active" data-metric="fuel">
+              <span class="toggle-icon">⛽</span>
+              Fuel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Computing shortest paths...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error" class="error hidden">
+        <span class="error-icon">⚠️</span>
+        <p id="errorMessage"></p>
+      </div>
+
+      <!-- Stats Section -->
+      <div id="stats" class="stats hidden">
+        <div class="stat-card">
+          <div class="stat-icon">🔢</div>
+          <div class="stat-content">
+            <div class="stat-value" id="totalNodes">0</div>
+            <div class="stat-label">Total Nodes</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔗</div>
+          <div class="stat-content">
+            <div class="stat-value" id="totalEdges">0</div>
+            <div class="stat-label">Total Edges</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔍</div>
+          <div class="stat-content">
+            <div class="stat-value" id="pathsComputed">0</div>
+            <div class="stat-label">Paths Computed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Answer Summary -->
+      <div id="quickAnswer" class="quick-answer hidden">
+        <h2 class="quick-answer-title">
+          🏆 Best Source Node (Lowest Total Across All Destinations)
+        </h2>
+        <div class="quick-answer-grid">
+          <div class="answer-card distance">
+            <div class="answer-header">
+              <span>📏</span> Lowest Total Distance
+            </div>
+            <div class="answer-value" id="bestDistance">—</div>
+            <div class="answer-explanation" id="bestDistanceExplanation"></div>
+            <div class="answer-route" id="bestDistanceRoute"></div>
+          </div>
+          <div class="answer-card time">
+            <div class="answer-header"><span>⏱️</span> Lowest Total Time</div>
+            <div class="answer-value" id="bestTime">—</div>
+            <div class="answer-explanation" id="bestTimeExplanation"></div>
+            <div class="answer-route" id="bestTimeRoute"></div>
+          </div>
+          <div class="answer-card fuel">
+            <div class="answer-header"><span>⛽</span> Lowest Total Fuel</div>
+            <div class="answer-value" id="bestFuel">—</div>
+            <div class="answer-explanation" id="bestFuelExplanation"></div>
+            <div class="answer-route" id="bestFuelRoute"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph Visualization Section -->
+      <div id="visualization" class="visualization-card hidden">
+        <h2 class="visualization-title">Graph Visualization</h2>
+        <div
+          id="network"
+          style="
+            width: 100%;
+            height: 500px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-card);
+          "
+        ></div>
+      </div>
+
+      <!-- Initial Prompt -->
+      <div id="initialPrompt" class="initial-prompt">
+        <div class="prompt-icon">👆</div>
+        <h2>Select a node to begin computing shortest paths!</h2>
+        <p>
+          Choose a source node from the dropdown above to view the graph
+          visualization and optimal multi-metric routes.
+        </p>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results" class="results hidden"></div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>Design and Analysis of Algorithms - Midterm Lab Work</p>
+        <p class="footer-tech">
+          Built with vanilla JavaScript | Dijkstra's Algorithm O((V+E) log V)
+        </p>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/graph.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
