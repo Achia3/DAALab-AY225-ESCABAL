@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Node Network Visualizer</title>
+
+		<!-- Graph visualization (Vis Network) -->
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/vis-network/styles/vis-network.min.css"
+		/>
+
+		<style>
+			:root {
+				--bg: #0b1220;
+				--panel: rgba(255, 255, 255, 0.06);
+				--panel-2: rgba(255, 255, 255, 0.09);
+				--text: rgba(255, 255, 255, 0.92);
+				--muted: rgba(255, 255, 255, 0.72);
+				--border: rgba(255, 255, 255, 0.12);
+				--accent: #7c9cff;
+				--danger: #ff6b6b;
+				--ok: #2dd4bf;
+				--shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+				--radius: 16px;
+				--radius-sm: 12px;
+				--mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+					"Courier New", monospace;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				color: var(--text);
+				background: radial-gradient(1200px 700px at 20% 10%, rgba(124, 156, 255, 0.22), transparent 60%),
+					radial-gradient(900px 650px at 85% 30%, rgba(45, 212, 191, 0.18), transparent 55%),
+					var(--bg);
+				font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+					"Apple Color Emoji", "Segoe UI Emoji";
+			}
+
+			.wrap {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 28px 18px 40px;
+			}
+
+			header {
+				display: flex;
+				gap: 14px;
+				align-items: flex-start;
+				justify-content: space-between;
+				margin-bottom: 16px;
+			}
+
+			.title {
+				display: grid;
+				gap: 6px;
+			}
+
+			h1 {
+				margin: 0;
+				font-size: 22px;
+				font-weight: 720;
+				letter-spacing: 0.2px;
+			}
+
+			.subtitle {
+				margin: 0;
+				color: var(--muted);
+				line-height: 1.45;
+				max-width: 72ch;
+				font-size: 13.5px;
+			}
+
+			.grid {
+				display: grid;
+				grid-template-columns: 360px 1fr;
+				gap: 14px;
+			}
+
+			.card {
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+				overflow: hidden;
+			}
+
+			.cardHeader {
+				padding: 14px 14px 10px;
+				border-bottom: 1px solid var(--border);
+				background: rgba(255, 255, 255, 0.04);
+			}
+
+			.cardHeader h2 {
+				margin: 0;
+				font-size: 14px;
+				font-weight: 700;
+				letter-spacing: 0.2px;
+			}
+
+			.cardBody {
+				padding: 14px;
+			}
+
+			.row {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+
+			label {
+				display: grid;
+				gap: 6px;
+				font-size: 12px;
+				color: var(--muted);
+			}
+
+			select,
+			input[type="file"] {
+				width: 100%;
+				background: rgba(255, 255, 255, 0.06);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-sm);
+				color: var(--text);
+				padding: 10px 10px;
+				outline: none;
+				color-scheme: dark;
+			}
+
+			/* Make dropdown list readable (prevents white-on-white options). */
+			select option {
+				background: var(--bg);
+				color: var(--text);
+			}
+
+			select:focus,
+			input[type="file"]:focus {
+				border-color: rgba(124, 156, 255, 0.65);
+				box-shadow: 0 0 0 4px rgba(124, 156, 255, 0.12);
+			}
+
+			.btnRow {
+				display: flex;
+				gap: 10px;
+				margin-top: 10px;
+			}
+
+			button {
+				appearance: none;
+				border: 1px solid var(--border);
+				background: rgba(124, 156, 255, 0.18);
+				color: var(--text);
+				padding: 10px 12px;
+				border-radius: var(--radius-sm);
+				font-weight: 650;
+				cursor: pointer;
+				flex: 1;
+			}
+
+			button.secondary {
+				background: rgba(255, 255, 255, 0.06);
+			}
+
+			button:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+
+			.meta {
+				margin-top: 12px;
+				padding: 10px 10px;
+				border-radius: var(--radius-sm);
+				background: rgba(255, 255, 255, 0.04);
+				border: 1px solid var(--border);
+				color: var(--muted);
+				font-size: 12px;
+				line-height: 1.45;
+			}
+
+			.status {
+				margin-top: 10px;
+				font-size: 12.5px;
+				color: var(--muted);
+			}
+
+			.status.error {
+				color: var(--danger);
+			}
+
+			.status.ok {
+				color: var(--ok);
+			}
+
+			#network {
+				height: 520px;
+				width: 100%;
+			}
+
+			.results {
+				display: grid;
+				gap: 10px;
+			}
+
+			.pill {
+				display: inline-flex;
+				gap: 8px;
+				align-items: center;
+				padding: 7px 10px;
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.06);
+				border: 1px solid var(--border);
+				color: var(--muted);
+				font-size: 12px;
+			}
+
+			.mono {
+				font-family: var(--mono);
+				font-size: 12.5px;
+				color: var(--text);
+				line-height: 1.5;
+			}
+
+			.divider {
+				height: 1px;
+				background: var(--border);
+				margin: 8px 0;
+			}
+
+			.chartWrap {
+				height: 260px;
+			}
+
+			.footerNote {
+				margin-top: 14px;
+				color: var(--muted);
+				font-size: 12px;
+				line-height: 1.5;
+			}
+
+			@media (max-width: 980px) {
+				.grid {
+					grid-template-columns: 1fr;
+				}
+				#network {
+					height: 520px;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="wrap">
+			<header>
+				<div class="title">
+					<h1>Cavite Route Optimizer</h1>
+					<p class="subtitle">
+						
+					</p>
+				</div>
+				<div class="pill" id="summaryPill">Loading…</div>
+			</header>
+
+			<div class="grid">
+				<section class="card" aria-label="Controls">
+					<div class="cardHeader"><h2>Controls</h2></div>
+					<div class="cardBody">
+						<div class="row">
+							<label>
+								Start node
+								<select id="startNode" disabled></select>
+							</label>
+							<label>
+								End node
+								<select id="endNode" disabled></select>
+							</label>
+						</div>
+
+						<div class="row" style="margin-top: 10px">
+							<label>
+								Optimize by
+								<select id="metric" disabled>
+									<option value="distance">Distance (km)</option>
+									<option value="time">Time (mins)</option>
+									<option value="fuel">Fuel (Liters)</option>
+								</select>
+							</label>
+							<label>
+								Load CSV (optional fallback)
+								<input id="csvFile" type="file" accept=".csv,text/csv" />
+							</label>
+						</div>
+
+						<div class="btnRow">
+							<button id="computeBtn" disabled>Compute shortest path</button>
+							<button id="resetBtn" class="secondary" disabled>Reset highlight</button>
+						</div>
+
+						<div class="btnRow">
+							<button id="bidirectionalBtn" disabled>
+								Bidirectional edges: On
+							</button>
+						</div>
+
+						<div class="meta" id="resultsBox" aria-label="Results">
+							<div class="results">
+								<div class="mono" id="resultText">Waiting for dataset…</div>
+								<div class="divider"></div>
+								<div>
+									<div class="mono" style="color: var(--muted)">
+										Data visualization: compares the three shortest routes (distance/time/fuel) for the
+										selected start/end.
+									</div>
+								</div>
+								<div class="chartWrap"><canvas id="compareChart"></canvas></div>
+							</div>
+						</div>
+
+						<div class="status" id="status"></div>
+						<div class="footerNote">
+							Tip: If the CSV won’t load when double-clicking the HTML file, use a local web server
+							(e.g., VS Code Live Server) or upload the CSV using the file chooser above.
+						</div>
+					</div>
+				</section>
+
+				<section class="card" aria-label="Node Map">
+					<div class="cardHeader"><h2>Node Map</h2></div>
+					<div id="network"></div>
+				</section>
+			</div>
+		</div>
+
+		<noscript>
+			<div style="padding: 18px; color: white">This app requires JavaScript enabled.</div>
+		</noscript>
+
+		<!-- Libraries -->
+		<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>
